@@ -20,7 +20,7 @@ Rozilik bilan kamera va mikrofonni vaqtincha ulash uchun Flask/WebRTC namuna. Qa
    - `SUPABASE_URL`
    - `SUPABASE_ANON_KEY` (yoki publishable key)
    - `SUPABASE_SECRET_KEY` (faqat Flask serverda)
-   - `PUBLIC_BASE_URL` (ommaviy HTTPS sayt manzili)
+   - `APP_PUBLIC_URL` (ommaviy HTTPS sayt manzili)
 6. `python app.py`
 
 Email taklif havolasi Supabase sozlamasidagi Email OTP Expiration muddatiga bog‘liq (standartida 1 soat). Bu muddat davomidagi rozilik linkiga taalluqli; ulanish boshlangach, sessiya tomonlardan biri **Uzatishni to‘xtatish** tugmasini bosmaguncha davom etadi. Kamera va mikrofon uchun rozilik talab qilinadi.
@@ -28,3 +28,4 @@ Email taklif havolasi Supabase sozlamasidagi Email OTP Expiration muddatiga bog�
 ## Xavfsizlik eslatmasi
 
 Namuna email yuborishni soatiga bir IP’dan 5, bir manzilga 3 taklif bilan cheklaydi; bu xotirada saqlanadi va server qayta ishga tushsa tozalanadi. Ochiq internetga chiqarishdan oldin doimiy rate-limit, HTTPS reverse proxy, abuse himoyasi va production sozlamalarini qo‘shing. Supabase secret kaliti RLS’ni chetlab o‘tadi va faqat ishonchli serverda turishi kerak.
+

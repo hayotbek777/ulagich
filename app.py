@@ -34,11 +34,11 @@ def create_invitation():
     project_url = os.environ.get("SUPABASE_URL", "").rstrip("/")
     secret_key = os.environ.get("SUPABASE_SECRET_KEY") or os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
     anon_key = os.environ.get("SUPABASE_ANON_KEY")
-    base_url = os.environ.get("PUBLIC_BASE_URL", "").rstrip("/")
+    base_url = os.environ.get("APP_PUBLIC_URL", "").rstrip("/")
     if not project_url or not secret_key or not anon_key or not base_url:
-        return jsonify(error="Supabase sozlanmagan. SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SECRET_KEY va PUBLIC_BASE_URL kerak."), 503
+        return jsonify(error="Supabase sozlanmagan. SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SECRET_KEY va APP_PUBLIC_URL kerak."), 503
     if not base_url.startswith("https://"):
-        return jsonify(error="PUBLIC_BASE_URL telefon ochadigan ommaviy HTTPS manzili bo‘lishi kerak."), 503
+        return jsonify(error="APP_PUBLIC_URL telefon ochadigan ommaviy HTTPS manzili bo‘lishi kerak."), 503
 
     now = time.time()
     ip = request.remote_addr or "unknown"
@@ -92,3 +92,4 @@ def handle_signal(data):
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000, debug=False)
+
