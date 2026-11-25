@@ -1,21 +1,30 @@
 # Ulagich
 
-Rozilik bilan kamera va mikrofonni vaqtincha ulash uchun Flask/WebRTC namuna. Telefon raqami kiritilganda SMS orqali bir martalik rozilik havolasi yuboriladi. Telefon egasi havolani o‘zi ochib, ekrandagi so‘rovni qabul qilishi va brauzerda kamera/mikrofonga ruxsat berishi kerak.
+Rozilik bilan kamera va mikrofonni vaqtincha ulash uchun Flask/WebRTC namuna. Qabul qiluvchining emailiga Supabase Auth taklif havolasi yuboriladi. U havolani o‘zi ochib, so‘rovni qabul qilishi va brauzerda kamera/mikrofonga ruxsat berishi kerak.
+
+## Supabase sozlash
+
+1. Supabase’da loyiha yarating. Project URL va anon/publishable key’ni oling.
+2. Auth > URL Configuration bo‘limida saytning Site URL’ini va Redirect URLs ro‘yxatiga `https://saytingiz-manzili/**` qo‘shing.
+3. Auth > Email Templates > Invite user shablonini ochib, xat matnida kamera va mikrofon faqat qabul qiluvchi tasdiqlagach ulanadi deb aniq yozing. `{{ .ConfirmationURL }}` havolasini saqlang.
+4. Supabase’ning standart email jo‘natgichi faqat loyihangiz jamoasidagi oldindan ruxsat etilgan manzillarga yuboradi va hozir 2 ta email/soat bilan cheklangan. Tashqi foydalanuvchilarga yuborish uchun Auth SMTP Settings’da custom SMTP sozlang.
+5. Project URL, public anon key va server uchun secret/service_role key’ni sozlang. **Secret key’ni hech qachon HTML, brauzer yoki GitHub’ga joylamang.**
 
 ## Ishga tushirish
 
-1. Python 3.10 yoki undan yangisini o‘rnating.
-2. `C:\Ulagich` ichida terminal oching.
-3. `python -m venv .venv`
-4. PowerShell’da `.venv\Scripts\Activate.ps1`
-5. `pip install -r requirements.txt`
-6. Twilio hisobidan muhit o‘zgaruvchilarini sozlang: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`, `PUBLIC_BASE_URL` (saytning ommaviy HTTPS manzili).
-7. `python app.py`
+1. `C:\Ulagich` ichida terminal oching.
+2. `python -m venv .venv`
+3. PowerShell’da `.venv\Scripts\Activate.ps1`
+4. `pip install -r requirements.txt`
+5. Quyidagi muhit o‘zgaruvchilarini terminalda belgilang:
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY` (yoki publishable key)
+   - `SUPABASE_SECRET_KEY` (faqat Flask serverda)
+   - `PUBLIC_BASE_URL` (ommaviy HTTPS sayt manzili)
+6. `python app.py`
 
-Sayt HTTPS manzilda joylashtirilishi kerak. `127.0.0.1` faqat server ishlayotgan kompyuterda ochiladi. Kalitlarni kod ichiga yozmang.
+Email taklif havolasi Supabase sozlamasidagi Email OTP Expiration muddatiga bog‘liq (standartida 1 soat). Bu muddat davomidagi rozilik linkiga taalluqli; ulanish boshlangach, sessiya tomonlardan biri **Uzatishni to‘xtatish** tugmasini bosmaguncha davom etadi. Kamera va mikrofon uchun rozilik talab qilinadi.
 
-## Rozilik va cheklovlar
+## Xavfsizlik eslatmasi
 
-Ko‘ruvchi telefon raqamini xalqaro formatda kiritadi. SMS havolasi 10 daqiqada eskiradi. Namuna soatiga bir IP’dan 5, bir raqamga 3 SMS bilan cheklaydi. Telefon egasi havolani ochishi, rozilikni bosishi va brauzer ruxsatini berishi shart. Havola kamera/mikrofonni o‘zi yoqmaydi. Istalgan tomon sessiyani to‘xtata oladi.
-
-Takliflar va limitlar hozir xotirada saqlanadi; server qayta ishga tushsa takliflar bekor bo‘ladi. Ochiq internetga chiqarishdan oldin HTTPS reverse proxy, doimiy saqlash va abuse himoyasini qo‘shing. SMS provayderida to‘lov va mamlakat bo‘yicha cheklovlar bo‘lishi mumkin.
+Namuna email yuborishni soatiga bir IP’dan 5, bir manzilga 3 taklif bilan cheklaydi; bu xotirada saqlanadi va server qayta ishga tushsa tozalanadi. Ochiq internetga chiqarishdan oldin doimiy rate-limit, HTTPS reverse proxy, abuse himoyasi va production sozlamalarini qo‘shing. Supabase secret kaliti RLS’ni chetlab o‘tadi va faqat ishonchli serverda turishi kerak.
