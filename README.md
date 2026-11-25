@@ -1,12 +1,12 @@
 # Ulagich
 
-Rozilik bilan kamera va mikrofonni vaqtincha ulash uchun Flask/WebRTC namuna. Qabul qiluvchining emailiga Supabase Auth taklif havolasi yuboriladi. U havolani o‘zi ochib, so‘rovni qabul qilishi va brauzerda kamera/mikrofonga ruxsat berishi kerak.
+Rozilik bilan kamera va mikrofonni vaqtincha ulash uchun Flask/WebRTC namuna. Qabul qiluvchining emailiga Supabase Auth taklif havolasi yuboriladi. Yangi emailga taklif, Supabase’da mavjud emailga esa kirish havolasi yuboriladi. U havolani o‘zi ochib, so‘rovni qabul qilishi va brauzerda kamera/mikrofonga ruxsat berishi kerak.
 
 ## Supabase sozlash
 
 1. Supabase’da loyiha yarating. Project URL va anon/publishable key’ni oling.
 2. Auth > URL Configuration bo‘limida saytning Site URL’ini va Redirect URLs ro‘yxatiga `https://saytingiz-manzili/**` qo‘shing.
-3. Auth > Email Templates > Invite user shablonini ochib, xat matnida kamera va mikrofon faqat qabul qiluvchi tasdiqlagach ulanadi deb aniq yozing. `{{ .ConfirmationURL }}` havolasini saqlang.
+3. Auth > Email Templates > Invite user shablonini ochib, xat matnida kamera va mikrofon faqat qabul qiluvchi tasdiqlagach ulanadi deb aniq yozing. `{{ .ConfirmationURL }}` havolasini saqlang. Mavjud hisoblar uchun **Magic Link** email shablonida ham shu tasdiqlash havolasi bo‘lishi kerak.
 4. Supabase’ning standart email jo‘natgichi faqat loyihangiz jamoasidagi oldindan ruxsat etilgan manzillarga yuboradi va hozir 2 ta email/soat bilan cheklangan. Tashqi foydalanuvchilarga yuborish uchun Auth SMTP Settings’da custom SMTP sozlang.
 5. Project URL, public anon key va server uchun secret/service_role key’ni sozlang. **Secret key’ni hech qachon HTML, brauzer yoki GitHub’ga joylamang.**
 

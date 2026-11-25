@@ -61,16 +61,38 @@ def create_invitation():
             if response.status not in (200, 201):
                 return jsonify(error="Supabase email taklifini yubora olmadi."), 502
     except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace")
-        app.logger.warning("Supabase invitation failed (%s): %s", exc.code, detail[:500])
-        return jsonify(error="Email yuborilmadi. Supabase SMTP, email shabloni va ruxsat etilgan redirect manzilini tekshiring."), 502
+        try:
+            invite_error = json.loads(exc.read().decode("utf-8", errors="replace"))
+        except (ValueError, UnicodeDecodeError):
+            invite_error = {}
+        if exc.code == 422 and invite_error.get("error_code") == "email_exists":
+            otp_endpoint = project_url + "/auth/v1/otp?" + urllib.parse.urlencode({"redirect_to": redirect_to})
+            otp_payload = json.dumps({"email": email, "create_user": False}).encode("utf-8")
+            otp_req = urllib.request.Request(otp_endpoint, data=otp_payload, method="POST")
+            otp_req.add_header("apikey", anon_key)
+            otp_req.add_header("Content-Type", "application/json")
+            try:
+                with urllib.request.urlopen(otp_req, timeout=15) as response:
+                    if response.status not in (200, 201):
+                        return jsonify(error="Mavjud email uchun kirish havolasi yuborilmadi."), 502
+            except urllib.error.HTTPError as otp_exc:
+                try:
+                    otp_error = json.loads(otp_exc.read().decode("utf-8", errors="replace"))
+                    error_code = otp_error.get("error_code", "unknown")
+                except (ValueError, UnicodeDecodeError):
+                    error_code = "unknown"
+                app.logger.warning("Supabase email sign-in failed (%s): %s", otp_exc.code, error_code)
+                return jsonify(error="Mavjud emailga havola yuborilmadi. Supabase SMTP va Magic Link shablonini tekshiring."), 502
+        else:
+            app.logger.warning("Supabase invitation failed (%s): %s", exc.code, invite_error.get("error_code", "unknown"))
+            return jsonify(error="Email yuborilmadi. Supabase SMTP, email shabloni va redirect sozlamasini tekshiring."), 502
     except Exception:
         app.logger.exception("Supabase invitation failed")
         return jsonify(error="Supabase bilan ulanish amalga oshmadi. Sozlamalarni tekshiring."), 502
 
     for key in ("ip:" + ip, "email:" + email):
         SEND_LOG.setdefault(key, []).append(now)
-    return jsonify(room=room, message="Taklif emailga yuborildi. Qabul qiluvchi havolani ochib, kamera/mikrofon so‘rovini o‘zi tasdiqlashi kerak.")
+    return jsonify(room=room, message="Emailga taklif yoki kirish havolasi yuborildi. Qabul qiluvchi havolani ochib, kamera/mikrofon so‘rovini o‘zi tasdiqlashi kerak.")
 
 @socketio.on("join")
 def handle_join(data):
